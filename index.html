@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Bob’s - Contador de Waffles</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #fff6e0;
+    padding: 15px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header img {
+    width: 120px;
+}
+
+h1 {
+    margin: 5px 0;
+}
+
+.waffle {
+    background: #ffe0b2;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
+
+.linea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    padding: 6px 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.sumar { background: #4caf50; color: white; }
+.restar { background: #f44336; color: white; }
+
+.contador {
+    font-size: 18px;
+    margin: 0 8px;
+    font-weight: bold;
+}
+
+.precio {
+    font-size: 14px;
+}
+
+.resumen {
+    background: #ffcc80;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.reset {
+    margin-top: 15px;
+    background: black;
+    color: white;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <img src="logo.png" alt="Bob’s Logo">
+    <h1>Bob’s</h1>
+    <p>Contador de Waffles</p>
+</header>
+
+<div id="lista"></div>
+
+<div class="resumen">
+    <p><strong>Total de waffles vendidos:</strong> <span id="total">0</span></p>
+    <p><strong>Ganancia total del día:</strong> $<span id="ganancia">0</span></p>
+    <button class="reset" onclick="reiniciar()">Reiniciar día</button>
+</div>
+
+<script>
+const waffles = [
+    { nombre: "Waffle con ddl", precio: 8000 },
+    { nombre: "Waffle con crema", precio: 8000 },
+
+    { nombre: "Waffle con ddl y banana", precio: 8500 },
+    { nombre: "Waffle con ddl y frutilla", precio: 8500 },
+    { nombre: "Waffle con crema y banana", precio: 8500 },
+    { nombre: "Waffle con crema y frutilla", precio: 8500 },
+
+    { nombre: "Waffle con ddl (banana y frutilla)", precio: 9000 },
+    { nombre: "Waffle con crema (banana y frutilla)", precio: 9000 },
+
+    { nombre: "Waffle con Nutella", precio: 9000 },
+    { nombre: "Waffle con Nutella y banana", precio: 9500 },
+    { nombre: "Waffle con Nutella y frutilla", precio: 9500 },
+    { nombre: "Waffle con Nutella (banana y frutilla)", precio: 9500 }
+];
+
+const lista = document.getElementById("lista");
+
+waffles.forEach((w, i) => {
+    const id = "w" + i;
+    const valor = localStorage.getItem(id) || 0;
+
+    lista.innerHTML += `
+    <div class="waffle">
+        <div class="linea">
+            <strong>${w.nombre}</strong>
+            <span class="precio">$${w.precio}</span>
+        </div>
+        <div class="linea">
+            <div>
+                <button class="restar" onclick="cambiar('${id}', -1)">-</button>
+                <span class="contador" id="${id}">${valor}</span>
+                <button class="sumar" onclick="cambiar('${id}', 1)">+</button>
+            </div>
+        </div>
+    </div>`;
+});
+
+function cambiar(id, valor) {
+    let n = parseInt(document.getElementById(id).innerText);
+    n += valor;
+    if (n < 0) n = 0;
+    document.getElementById(id).innerText = n;
+    localStorage.setItem(id, n);
+    actualizar();
+}
+
+function actualizar() {
+    let total = 0;
+    let ganancia = 0;
+
+    waffles.forEach((w, i) => {
+        const cantidad = parseInt(document.getElementById("w"+i).innerText);
+        total += cantidad;
+        ganancia += cantidad * w.precio;
+    });
+
+    document.getElementById("total").innerText = total;
+    document.getElementById("ganancia").innerText = ganancia;
+}
+
+function reiniciar() {
+    if (confirm("¿Seguro que querés reiniciar el contador del día?")) {
+        waffles.forEach((_, i) => {
+            localStorage.setItem("w"+i, 0);
+            document.getElementById("w"+i).innerText = 0;
+        });
+        actualizar();
+    }
+}
+
+actualizar();
+</script>
+
+</body>
+</html>
