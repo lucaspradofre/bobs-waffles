@@ -166,6 +166,81 @@ function reiniciar() {
 
 actualizar();
 </script>
+<h2>📅 Cierre diario</h2>
 
-</body>
+<button onclick="cerrarDia()">Cerrar día</button>
+
+<h3>📊 Registro de ganancias</h3>
+
+<table border="1" width="100%" style="background:#fff; text-align:center">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Facturado del día</th>
+      <th>Ganancia neta (70%)</th>
+      <th>Total acumulado</th>
+    </tr>
+  </thead>
+  <tbody id="tablaGanancias"></tbody>
+</table>
+<script>
+  function cerrarDia() {
+    const hoy = new Date().toLocaleDateString("es-AR");
+
+    // total facturado del día (el que ya calcula tu sistema)
+    const facturado = parseFloat(
+      document.getElementById("total").innerText.replace("$", "")
+    ) || 0;
+
+    if (facturado === 0) {
+      alert("No hay ventas para cerrar el día");
+      return;
+    }
+
+    const gananciaNeta = facturado * 0.7; // te queda el 70%
+
+    let historial = JSON.parse(localStorage.getItem("historialDias")) || [];
+
+    let totalAcumulado = historial.reduce(
+      (acc, d) => acc + d.ganancia,
+      0
+    );
+
+    totalAcumulado += gananciaNeta;
+
+    historial.push({
+      fecha: hoy,
+      facturado: facturado,
+      ganancia: gananciaNeta,
+      total: totalAcumulado
+    });
+
+    localStorage.setItem("historialDias", JSON.stringify(historial));
+
+    mostrarHistorial();
+
+    alert("✅ Día cerrado correctamente");
+  }
+
+  function mostrarHistorial() {
+    const tabla = document.getElementById("tablaGanancias");
+    if (!tabla) return;
+
+    let historial = JSON.parse(localStorage.getItem("historialDias")) || [];
+    tabla.innerHTML = "";
+
+    historial.forEach(dia => {
+      tabla.innerHTML += `
+        <tr>
+          <td>${dia.fecha}</td>
+          <td>$${dia.facturado.toFixed(0)}</td>
+          <td>$${dia.ganancia.toFixed(0)}</td>
+          <td>$${dia.total.toFixed(0)}</td>
+        </tr>
+      `;
+    });
+  }
+
+  mostrarHistorial();
+</script></body>
 </html>
