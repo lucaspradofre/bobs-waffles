@@ -166,11 +166,11 @@ function reiniciar() {
 
 actualizar();
 </script>
-<h2>📅 Cierre diario</h2>
+<h2> Cierre diario</h2>
 
 <button onclick="cerrarDia()">Cerrar día</button>
 
-<h3>📊 Registro de ganancias</h3>
+<h3> Registro de ganancias</h3>
 
 <table border="1" width="100%" style="background:#fff; text-align:center">
   <thead>
@@ -219,7 +219,7 @@ actualizar();
 
     mostrarHistorial();
 
-    alert("✅ Día cerrado correctamente");
+    alert(" Día cerrado correctamente");
   }
 
   function mostrarHistorial() {
@@ -242,5 +242,32 @@ actualizar();
   }
 
   mostrarHistorial();
-</script></body>
+</script><script>
+function exportarExcel() {
+  let historial = JSON.parse(localStorage.getItem("historialDias")) || [];
+
+  if (historial.length === 0) {
+    alert("No hay datos para exportar");
+    return;
+  }
+
+  let csv = "Fecha,Facturado del día,Ganancia neta (70%),Total acumulado\n";
+
+  historial.forEach(dia => {
+    csv += `${dia.fecha},${dia.facturado},${dia.ganancia},${dia.total}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "ganancias_bobs.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+
+</body>
 </html>
